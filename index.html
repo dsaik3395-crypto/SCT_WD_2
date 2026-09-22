@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch Web Application | SkillCraft Technology Task 02</title>
+  <meta name="description" content="A modern, high-precision Stopwatch web application with lap tracking, built with HTML, CSS, and Vanilla JavaScript.">
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts: Outfit for UI & Space Mono for precise digital timer numbers -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- Ambient background glow effects -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+  <div class="glow-sphere sphere-3"></div>
+
+  <main class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-badge">
+        <span class="pulse-dot"></span>
+        <span>SkillCraft Technology &bull; Task 02</span>
+      </div>
+      <h1 class="app-title">Precision Stopwatch</h1>
+      <p class="app-subtitle">Accurate time tracking &amp; lap analytics</p>
+    </header>
+
+    <!-- Stopwatch Dial and Digital Readout Card -->
+    <section class="stopwatch-card">
+      <div class="dial-container">
+        <!-- SVG Animated Ring Indicator -->
+        <svg class="progress-ring" viewBox="0 0 280 280" aria-hidden="true">
+          <circle class="progress-ring-bg" cx="140" cy="140" r="128" />
+          <circle class="progress-ring-circle" id="progressRing" cx="140" cy="140" r="128" />
+        </svg>
+
+        <div class="time-display-wrapper">
+          <div class="status-indicator" id="statusIndicator">READY</div>
+
+          <div class="time-display" id="timeDisplay" aria-live="polite" aria-label="Elapsed time">
+            <span class="time-segment" id="hours">00</span>
+            <span class="time-colon">:</span>
+            <span class="time-segment" id="minutes">00</span>
+            <span class="time-colon">:</span>
+            <span class="time-segment" id="seconds">00</span>
+            <span class="time-dot">.</span>
+            <span class="time-segment time-ms" id="milliseconds">00</span>
+          </div>
+
+          <div class="time-labels" aria-hidden="true">
+            <span>HR</span>
+            <span>MIN</span>
+            <span>SEC</span>
+            <span>MS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Action Buttons -->
+      <div class="controls-container">
+        <button class="btn btn-secondary" id="lapBtn" disabled aria-label="Record Lap">
+          <i class="fa-solid fa-flag" aria-hidden="true"></i>
+          <span class="btn-label">Lap</span>
+        </button>
+
+        <button class="btn btn-primary" id="startPauseBtn" aria-label="Start stopwatch">
+          <i class="fa-solid fa-play" id="startPauseIcon" aria-hidden="true"></i>
+          <span class="btn-label" id="startPauseText">Start</span>
+        </button>
+
+        <button class="btn btn-secondary" id="resetBtn" disabled aria-label="Reset stopwatch">
+          <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+          <span class="btn-label">Reset</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Lap History & Analytics Section -->
+    <section class="laps-section" id="lapsSection" aria-label="Lap history">
+      <div class="laps-header">
+        <div class="laps-title-group">
+          <h2>Lap History</h2>
+          <span class="lap-badge" id="lapCountBadge" aria-live="polite">0 Laps</span>
+        </div>
+        <button class="btn-clear" id="clearLapsBtn" disabled aria-label="Clear all recorded laps">
+          <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+          <span>Clear</span>
+        </button>
+      </div>
+
+      <!-- Lap Summary Stats (visible when 2+ laps) -->
+      <div class="lap-stats-grid" id="lapStatsGrid" aria-label="Lap statistics">
+        <div class="stat-card stat-fastest">
+          <div class="stat-icon"><i class="fa-solid fa-bolt" aria-hidden="true"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Fastest</span>
+            <span class="stat-value" id="fastestLapTime">--</span>
+          </div>
+        </div>
+        <div class="stat-card stat-slowest">
+          <div class="stat-icon"><i class="fa-solid fa-hourglass-half" aria-hidden="true"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Slowest</span>
+            <span class="stat-value" id="slowestLapTime">--</span>
+          </div>
+        </div>
+        <div class="stat-card stat-average">
+          <div class="stat-icon"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Average</span>
+            <span class="stat-value" id="averageLapTime">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lap Table -->
+      <div class="lap-table-container">
+        <div class="lap-table-header" aria-hidden="true">
+          <span>Lap #</span>
+          <span>Duration</span>
+          <span>Split</span>
+        </div>
+        <div class="lap-list" id="lapList" role="list" aria-label="Recorded laps">
+          <div class="empty-laps" id="emptyLaps">
+            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+            <p>No laps recorded yet</p>
+            <span class="empty-tip">Tap &ldquo;Lap&rdquo; while the timer is running</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Keyboard Shortcuts Footer — hidden on mobile via CSS -->
+    <footer class="app-footer">
+      <div class="shortcuts-hint" aria-label="Keyboard shortcuts">
+        <span class="hint-item"><kbd>Space</kbd> Start / Pause</span>
+        <span class="hint-item"><kbd>L</kbd> Record Lap</span>
+        <span class="hint-item"><kbd>R</kbd> Reset</span>
+      </div>
+      <p class="copyright">&copy; 2026 SkillCraft Technology Internship &mdash; HTML, CSS &amp; Vanilla JS</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
